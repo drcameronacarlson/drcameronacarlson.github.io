@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>MoBoard Bridge Trainer</title>
+<meta name="theme-color" content="#0d1920">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,700&display=swap">
+<style>
+:root {
+  --bg: #e7ecee; --panel: #f9fbfb; --panel-2: #eef3f4; --ink: #12212b; --muted: #566873; --line: #cad5da;
+  --accent: #0a6868; --accent-ink: #ffffff; --accent-soft: #d6ebe9; --good: #22763a; --bad: #b3261e; --good-soft: #dff1e3; --bad-soft: #f8e1df;
+  --chrome: #0d1920; --chrome-ink: #e4edf1; --chrome-muted: #8ea4ae;
+  --paper: #f5f7f0; --grid: #c3d2c4; --grid-strong: #86a08d; --speed-ink: #9a5616;
+  --v-own: #1d4fa6; --v-other: #a3262a; --v-rel: #08775a; --live: #6a3d9e; --pencil: #3b3f42;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif; --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #081015; --panel: #0e1920; --panel-2: #132229; --ink: #dce8ec; --muted: #89a0aa; --line: #213540;
+    --accent: #3cc0b4; --accent-ink: #03201d; --accent-soft: #123a38; --good: #5ccf7a; --bad: #ff7d71; --good-soft: #12301c; --bad-soft: #3a1714;
+    --chrome: #050c10; --chrome-ink: #e4edf1; --chrome-muted: #7f97a1;
+    --paper: #0c171b; --grid: #1b3432; --grid-strong: #2e5752; --speed-ink: #e3a45e;
+    --v-own: #74a9ff; --v-other: #ff7f7f; --v-rel: #4fd6a6; --live: #c69cff; --pencil: #d6d9db;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #081015; --panel: #0e1920; --panel-2: #132229; --ink: #dce8ec; --muted: #89a0aa; --line: #213540;
+  --accent: #3cc0b4; --accent-ink: #03201d; --accent-soft: #123a38; --good: #5ccf7a; --bad: #ff7d71; --good-soft: #12301c; --bad-soft: #3a1714;
+  --chrome: #050c10; --chrome-ink: #e4edf1; --chrome-muted: #7f97a1;
+  --paper: #0c171b; --grid: #1b3432; --grid-strong: #2e5752; --speed-ink: #e3a45e;
+  --v-own: #74a9ff; --v-other: #ff7f7f; --v-rel: #4fd6a6; --live: #c69cff; --pencil: #d6d9db;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.45 var(--sans); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.app { display: flex; flex-direction: column; min-height: 100%; }
+
+/* ---- Header ---- */
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; padding-block: 10px; padding-inline: 16px; background: var(--chrome); color: var(--chrome-ink); }
+.brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+.brand svg { width: 34px; height: 34px; flex: none; }
+.brand .name { font: 700 22px/1 var(--display); letter-spacing: .05em; text-transform: uppercase; }
+.brand .sub { font: 500 10.5px/1.3 var(--mono); color: var(--chrome-muted); letter-spacing: .06em; text-transform: uppercase; }
+.simctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.clock { display: flex; flex-direction: column; align-items: flex-start; min-width: 88px; }
+.clock b { font: 600 20px/1 var(--mono); font-variant-numeric: tabular-nums; }
+.clock span, .ownread span { font: 500 9.5px/1.2 var(--mono); color: var(--chrome-muted); letter-spacing: .1em; }
+.ownread { display: flex; flex-direction: column; font: 500 13px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+.hbtn { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); color: var(--chrome-ink); border-radius: 6px; padding: 6px 11px; cursor: pointer; font: 500 12.5px/1 var(--mono); }
+.hbtn:hover { background: rgba(255,255,255,.14); }
+.hbtn.run { background: #3cc0b4; color: #03201d; border-color: transparent; font-weight: 600; min-width: 76px; }
+.hbtn.run[aria-pressed="true"] { background: #ffc15e; }
+.seg { display: inline-flex; border: 1px solid rgba(255,255,255,.16); border-radius: 6px; overflow: hidden; }
+.seg button { background: transparent; border: 0; color: var(--chrome-ink); padding: 6px 9px; font: 500 12px/1 var(--mono); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: rgba(60,192,180,.28); color: #bff5ee; }
+
+/* ---- Main layout ---- */
+.main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding-block: 12px 16px; padding-inline: 16px; }
+.views { display: flex; flex-direction: column; gap: 8px; height: 64svh; min-height: 380px; }
+.side { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; }
+@media (min-width: 1000px) {
+  .app { height: 100%; }
+  .main { grid-template-columns: minmax(0, 1fr) 410px; flex: 1; min-height: 0; }
+  .views { height: auto; min-height: 0; }
+  .side { min-height: 0; overflow: hidden; }
+  .sidebody { overflow: auto; }
+}
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 6px; }
+.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 9px 12px 8px; cursor: pointer; font: 600 15px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.views .tabs { border: 0; padding: 0; }
+.panes { flex: 1; display: grid; gap: 8px; min-height: 0; }
+.pane { position: relative; border-radius: 8px; overflow: hidden; min-height: 0; background: #03100c; }
+.views[data-view="bridge"] .panes { grid-template: "b" 1fr / 1fr; }
+.views[data-view="radar"] .panes { grid-template: "r" 1fr / 1fr; }
+.views[data-view="moboard"] .panes { grid-template: "m" 1fr / 1fr; }
+.views[data-view="split"] .panes { grid-template: "b" 1fr "r" 1fr / 1fr; }
+@media (min-width: 700px) { .views[data-view="split"] .panes { grid-template: "b b" 1.05fr "r m" 1fr / 1fr 1fr; } }
+#pane-bridge { grid-area: b; } #pane-radar { grid-area: r; } #pane-moboard { grid-area: m; background: var(--paper); border: 1px solid var(--line); }
+.views:not([data-view="bridge"]):not([data-view="split"]) #pane-bridge,
+.views:not([data-view="radar"]):not([data-view="split"]) #pane-radar,
+.views:not([data-view="moboard"]):not([data-view="split"]) #pane-moboard { display: none; }
+@media (max-width: 699px) { .views[data-view="split"] #pane-moboard { display: none; } }
+.pane.tool { display: flex; flex-direction: column; }
+.stage { position: relative; flex: 1; min-height: 0; }
+.pane.tool > .ctrls { position: static; flex-wrap: nowrap; overflow-x: auto; padding: 6px; background: #071813; border-top: 1px solid rgba(141,255,180,.14); }
+#pane-moboard > .ctrls { background: var(--panel-2); border-top-color: var(--line); }
+.cbtn { flex: none; }
+.stage > canvas, .three-host, .three-host canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.nogl { color: #cfe; padding: 40px 16px; text-align: center; }
+
+/* Bridge overlays */
+.pane > canvas.tape { position: absolute; inset: auto; top: 0; left: 0; width: 100%; height: 34px; pointer-events: none; }
+.frame { position: absolute; inset: 34px 0 0 0; pointer-events: none; border-top: 6px solid rgba(16,22,26,.8); }
+.frame::before, .frame::after { content: ""; position: absolute; top: 0; bottom: 0; width: 3px; background: rgba(16,22,26,.5); }
+.frame::before { left: 30%; } .frame::after { left: 70%; }
+.labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.blabel { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer; white-space: nowrap; background: rgba(6,14,20,.72); color: #e8f2f5; border: 1px solid rgba(255,255,255,.2); border-radius: 4px; padding: 2px 6px; font: 500 10.5px/1.3 var(--mono); }
+.hud { position: absolute; left: 8px; top: 48px; pointer-events: none; color: #e8f2f5; font: 500 11px/1.4 var(--mono); background: rgba(6,14,20,.55); padding: 3px 7px; border-radius: 4px; max-width: calc(100% - 16px); }
+.ctrls { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; flex-wrap: wrap; gap: 5px; align-items: center; pointer-events: none; }
+.ctrls > * { pointer-events: auto; }
+.cbtn { background: rgba(8,18,24,.74); color: #e3eef2; border: 1px solid rgba(255,255,255,.16); border-radius: 5px; padding: 5px 9px; font: 500 11.5px/1.2 var(--mono); cursor: pointer; }
+.cbtn[aria-pressed="true"] { background: #3cc0b4; color: #03201d; border-color: transparent; }
+select.cbtn { padding: 4px 6px; }
+.readout { position: absolute; top: 6px; left: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 4px 12px; pointer-events: none; font: 500 10.5px/1.4 var(--mono); color: #9fe9bd; }
+.readout .amb { color: #ffc15e; }
+#pane-moboard .readout { color: var(--muted); top: auto; bottom: 4px; }
+#pane-moboard .readout .acc { color: var(--accent); }
+#pane-moboard .ctrls { top: auto; bottom: 8px; }
+#pane-moboard .cbtn { background: var(--panel); color: var(--ink); border-color: var(--line); }
+#pane-moboard .cbtn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.targets { position: absolute; right: 8px; top: 28px; background: rgba(2,12,9,.85); border: 1px solid rgba(141,255,180,.25); border-radius: 4px; padding: 4px 6px; max-width: calc(100% - 16px); overflow-x: auto; }
+.targets table { border-collapse: collapse; font: 500 10.5px/1.5 var(--mono); color: #aef3c8; font-variant-numeric: tabular-nums; }
+.targets th { color: #6fbf92; font-weight: 500; text-align: left; padding-right: 10px; }
+.targets td { padding-right: 10px; }
+
+/* ---- Side panel ---- */
+.sidebody { padding: 14px 16px 20px; }
+.sidepanel { display: flex; flex-direction: column; gap: 14px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row > select { flex: 1 1 180px; min-width: 0; }
+select, input[type="text"], input:not([type]), input[type="number"], textarea { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; min-width: 0; }
+.btn { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; cursor: pointer; font-weight: 500; font-size: 13px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.sm { padding: 4px 9px; font-size: 12px; }
+h3 { font: 700 21px/1.1 var(--display); letter-spacing: .03em; text-transform: uppercase; margin: 0; text-wrap: balance; }
+h4 { font: 600 16px/1.1 var(--display); letter-spacing: .06em; text-transform: uppercase; margin: 0; color: var(--muted); }
+.chip { display: inline-block; font: 500 10.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
+.chip.ghost { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.pmeta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pmeta .rec { margin-left: auto; font: 500 11px var(--mono); color: var(--muted); }
+.pcard { display: flex; flex-direction: column; gap: 12px; }
+.stmt { margin: 0; max-width: 62ch; }
+.fix { display: block; font: 500 13px/1.6 var(--mono); padding-left: 10px; border-left: 2px solid var(--accent); margin: 2px 0; }
+.stmt .fix:last-of-type { margin-bottom: 8px; }
+.answers { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.ans { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: 4px 10px; align-items: center; padding: 6px 8px; border-radius: 6px; background: var(--panel-2); }
+.ans > span { font-weight: 500; font-size: 13px; }
+.inwrap { display: flex; align-items: center; gap: 5px; }
+.inwrap input { width: 100%; font: 500 14px var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.inwrap em { font: 400 11px var(--mono); font-style: normal; color: var(--muted); min-width: 26px; }
+.ans output { grid-column: 1 / -1; font: 500 12px var(--mono); }
+.ans output:empty { display: none; }
+.ans.ok { background: var(--good-soft); } .ans.ok output { color: var(--good); }
+.ans.bad { background: var(--bad-soft); } .ans.bad output { color: var(--bad); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.score { font: 600 14px var(--mono); padding: 8px 10px; border-radius: 6px; background: var(--panel-2); }
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; max-width: 62ch; }
+.steps li::marker { font: 600 12px var(--mono); color: var(--accent); }
+.hint { color: var(--muted); font-size: 12.5px; margin: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 500 11px var(--mono); color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+legend { font: 600 14px var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0 4px; }
+.fgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.fgrid label, .sgrid label { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; color: var(--muted); font-weight: 500; }
+.fgrid input, .sgrid input { font: 500 13.5px var(--mono); width: 100%; }
+.sgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.ccard { border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; background: var(--panel); }
+.chead { display: flex; gap: 6px; align-items: center; }
+.chead input { flex: 1; min-width: 0; font-weight: 600; }
+.chead select { width: 110px; }
+.clive { font: 500 11.5px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.mans { display: flex; flex-direction: column; gap: 4px; font: 500 12px var(--mono); }
+.mans .m { display: flex; justify-content: space-between; align-items: center; background: var(--panel-2); border-radius: 4px; padding: 3px 6px; }
+.madd { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 5px; }
+.madd input { font: 500 12.5px var(--mono); width: 100%; }
+.icon { background: none; border: 1px solid var(--line); border-radius: 5px; width: 28px; height: 28px; cursor: pointer; color: var(--muted); flex: none; }
+.check { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+textarea { width: 100%; min-height: 90px; font: 12px var(--mono); resize: vertical; box-sizing: border-box; }
+details { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+details > summary { cursor: pointer; padding: 10px 12px; font-weight: 600; list-style-position: inside; }
+details > div { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+details p, details ul { margin: 0; max-width: 62ch; }
+details ul { padding-left: 18px; }
+.lessons { display: flex; flex-direction: column; gap: 8px; }
+.outtable { width: 100%; border-collapse: collapse; font: 500 13px var(--mono); font-variant-numeric: tabular-nums; }
+.outtable td { padding: 5px 4px; border-bottom: 1px solid var(--line); }
+.outtable td:last-child { text-align: right; font-weight: 600; }
+.err { color: var(--bad); font-weight: 500; }
+.sum li { margin: 2px 0; }
+@media (max-width: 600px) {
+  .brand .sub { display: none; }
+  .cbtn { padding: 4px 7px; font-size: 11px; }
+  .top { gap: 8px 12px; }
+  .ownread { flex-direction: row; gap: 8px; align-items: baseline; }
+}
+.side > .tabs { overflow-x: auto; scrollbar-width: none; flex: none; }
+.side > .tabs button { flex: none; padding-inline: 9px; }
+.tabs button:disabled { opacity: .4; cursor: not-allowed; }
+.titlerow { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.timer { font: 600 13px var(--mono); font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.timer.warn { color: var(--bad); }
+.stack { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; font-weight: 500; color: var(--muted); }
+.stack input, .stack textarea { color: var(--ink); }
+.locknote { margin: 0; padding: 8px 10px; border-radius: 6px; background: var(--bad-soft); color: var(--bad); font-size: 12.5px; font-weight: 500; }
+.ready { display: flex; flex-direction: column; gap: 8px; }
+.readyhead { display: flex; justify-content: space-between; align-items: baseline; }
+.readyhead b { font: 600 20px var(--mono); }
+.bar { height: 10px; border-radius: 5px; background: var(--panel-2); border: 1px solid var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+.exam { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; background: var(--accent-soft); flex-wrap: wrap; }
+.exam > div { flex: 1 1 200px; } .exam p { margin: 4px 0 0; }
+.path { display: flex; flex-direction: column; gap: 6px; }
+.prow { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 7px 9px; border-radius: 6px; background: var(--panel-2); }
+.prow b { display: block; font-size: 13px; }
+.prow span:not(.st) { display: block; font-size: 11.5px; color: var(--muted); }
+.st { font: 500 10.5px/1 var(--mono); padding: 4px 6px; border-radius: 4px; white-space: nowrap; }
+.st0 { color: var(--muted); border: 1px solid var(--line); }
+.st1 { color: var(--accent); background: var(--accent-soft); }
+.st2 { color: var(--good); background: var(--good-soft); }
+.btn.danger { background: var(--bad); border-color: var(--bad); color: #fff; }
+h5 { margin: 6px 0 4px; font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.typechecks { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 4px 12px; }
+.typechecks .check { font-size: 12.5px; align-items: flex-start; }
+.tablewrap { overflow-x: auto; }
+.roster th { text-align: left; font: 500 11px var(--mono); color: var(--muted); padding: 4px; }
+.roster td:last-child { text-align: left; font-weight: 400; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="#3cc0b4" stroke-width="1.5"/><circle cx="20" cy="20" r="12" fill="none" stroke="#3cc0b4" stroke-opacity=".5"/><circle cx="20" cy="20" r="6" fill="none" stroke="#3cc0b4" stroke-opacity=".5"/><path d="M20 2v36M2 20h36" stroke="#3cc0b4" stroke-opacity=".5"/><path d="M11 29L27 12" stroke="#ffc15e" stroke-width="2.2" stroke-linecap="round"/><circle cx="11" cy="29" r="2.4" fill="#ffc15e"/></svg>
+      <div><div class="name">MoBoard Trainer</div><div class="sub">Relative motion · Stationing · Wind · DIVTACS</div></div>
+    </div>
+    <div class="simctl">
+      <div class="clock"><b id="clock">0800:00</b><span>SIM TIME</span></div>
+      <button id="playBtn" class="hbtn run" aria-pressed="false">▶ Run</button>
+      <div class="seg" id="rateSeg" role="group" aria-label="Time compression">
+        <button data-rate="1" aria-pressed="true">1×</button><button data-rate="5">5×</button><button data-rate="15">15×</button><button data-rate="60">60×</button>
+      </div>
+      <button id="stepBtn" class="hbtn" title="Advance three minutes">+3 min</button>
+    </div>
+    <div class="ownread"><span>OWN SHIP</span><b id="ownRead">—</b></div>
+  </header>
+
+  <main class="main">
+    <section class="views" data-view="split">
+      <nav class="tabs" role="tablist" aria-label="Display">
+        <button data-view="bridge" role="tab">Bridge</button><button data-view="radar" role="tab">Radar</button><button data-view="moboard" role="tab">MoBoard</button><button data-view="split" role="tab" aria-selected="true">Split</button>
+      </nav>
+      <div class="panes">
+        <div class="pane" id="pane-bridge">
+          <div class="three-host"></div>
+          <div class="frame"></div>
+          <canvas class="tape"></canvas>
+          <div class="labels"></div>
+          <div class="hud"></div>
+          <div class="ctrls">
+            <button class="cbtn" data-b="left" aria-label="Look 45 degrees left">◀ 45°</button>
+            <button class="cbtn" data-b="ahead">Ahead</button>
+            <button class="cbtn" data-b="right" aria-label="Look 45 degrees right">45° ▶</button>
+            <button class="cbtn" data-b="astern">Astern</button>
+            <button class="cbtn" data-b="binos" aria-pressed="false">Binoculars</button>
+            <button class="cbtn" data-b="labels" aria-pressed="true">Labels</button>
+          </div>
+        </div>
+        <div class="pane tool" id="pane-radar">
+          <div class="stage"><canvas></canvas><div class="readout"></div><div class="targets" hidden></div></div>
+          <div class="ctrls">
+            <button class="cbtn" data-r="minus" aria-label="Decrease range">Range −</button>
+            <button class="cbtn" data-r="plus" aria-label="Increase range">Range +</button>
+            <button class="cbtn" data-r="hu" aria-pressed="false">Head-up</button>
+            <button class="cbtn" data-r="trails" aria-pressed="true">Trails</button>
+            <select class="cbtn" id="radarVec" aria-label="Target vectors"><option value="rel">Rel vectors</option><option value="true">True vectors</option><option value="off">No vectors</option></select>
+            <button class="cbtn" data-r="targets" aria-pressed="false">Target data</button>
+            <button class="cbtn" data-r="clear">Clear EBL/VRM</button>
+          </div>
+        </div>
+        <div class="pane tool" id="pane-moboard">
+          <div class="stage"><canvas></canvas><div class="readout"></div></div>
+          <div class="ctrls">
+            <select class="cbtn" id="moDist" aria-label="Distance scale"></select>
+            <select class="cbtn" id="moSpd" aria-label="Speed scale"></select>
+            <select class="cbtn" id="moCenter" aria-label="Board center"><option value="own">Center: own ship</option><option value="guide">Center: guide</option></select>
+            <button class="cbtn" data-m="live" aria-pressed="true">Live plot</button>
+            <button class="cbtn" data-m="sol" aria-pressed="false">Solution</button>
+            <button class="cbtn" data-m="point" aria-pressed="false">Point</button>
+            <button class="cbtn" data-m="line" aria-pressed="false">Line</button>
+            <button class="cbtn" data-m="undo">Undo</button>
+            <button class="cbtn" data-m="clear">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <nav class="tabs" role="tablist" aria-label="Panels">
+        <button data-side="practice" aria-selected="true">Practice</button><button data-side="progress">Progress</button><button data-side="scenario">Scenario</button><button data-side="solver">Solver</button><button data-side="lessons">Lessons</button><button data-side="instructor">Instructor</button>
+      </nav>
+      <div class="sidebody">
+        <section class="sidepanel" id="sp-practice">
+          <div class="row"><select id="probType" aria-label="Problem type or set"></select><button id="newProb" class="btn primary">New problem</button></div>
+          <p class="locknote" id="lockNote" hidden>Exam conditions: hints, the solver and the lessons are closed until you check each answer.</p>
+          <div id="probArea"></div>
+        </section>
+
+        <section class="sidepanel" id="sp-progress" hidden></section>
+
+        <section class="sidepanel" id="sp-instructor" hidden>
+          <p class="hint">Build an assignment, hand out its code, then paste back the completion codes your midshipmen send you. Everyone using the same code gets the same numbers, so answers can be compared and discussed.</p>
+          <fieldset>
+            <legend>New assignment</legend>
+            <label class="stack">Title<input id="asTitle" placeholder="e.g. Week 4 — Stationing"></label>
+            <div id="asTypes" class="typechecks"></div>
+            <div class="fgrid">
+              <label>Problems per type<input id="asPer" value="1" inputmode="numeric"></label>
+              <label>Time limit, min (0 = none)<input id="asTime" value="0" inputmode="numeric"></label>
+            </div>
+            <label class="check"><input type="checkbox" id="asHints" checked> Allow hints and worked solutions before checking</label>
+            <div id="asCustom" class="mans"></div>
+            <div class="actions"><button id="asMake" class="btn primary">Create assignment code</button><button id="asCopy" class="btn">Copy code</button></div>
+            <textarea id="asCode" readonly aria-label="Assignment code" spellcheck="false"></textarea>
+            <p class="hint" id="asMsg"></p>
+          </fieldset>
+          <fieldset>
+            <legend>Collect results</legend>
+            <p class="hint">Paste the completion codes (they start with MBR-), one or many at once.</p>
+            <textarea id="rsIn" aria-label="Completion codes" spellcheck="false"></textarea>
+            <div class="actions"><button id="rsGo" class="btn primary">Build roster</button><button id="rsCsv" class="btn">Copy as spreadsheet (CSV)</button></div>
+            <div id="rsOut"></div>
+            <textarea id="rsCsvOut" hidden readonly aria-label="CSV"></textarea>
+            <p class="hint" id="rsMsg"></p>
+          </fieldset>
+        </section>
+
+        <section class="sidepanel" id="sp-scenario" hidden>
+          <div class="row"><select id="presetSel" aria-label="Scenario preset"></select><button id="presetLoad" class="btn">Load</button></div>
+          <fieldset>
+            <legend>Own ship</legend>
+            <div class="fgrid">
+              <label>Course °T<input id="osC" inputmode="numeric"></label>
+              <label>Speed kts<input id="osS" inputmode="decimal"></label>
+              <label>&nbsp;<button id="osApply" class="btn">Order</button></label>
+            </div>
+            <label class="check"><input type="checkbox" id="realistic"> Realistic helm (ships turn ~1°/s and change speed gradually)</label>
+          </fieldset>
+          <fieldset>
+            <legend>Environment</legend>
+            <div class="fgrid">
+              <label>Wind from °T<input id="windFrom" inputmode="numeric"></label>
+              <label>Wind kts<input id="windSpd" inputmode="decimal"></label>
+              <label>Light<select id="lightSel"><option value="day">Day</option><option value="dusk">Dusk</option><option value="night">Night</option></select></label>
+            </div>
+          </fieldset>
+          <div class="row"><h4 style="margin-right:auto">Contacts</h4><label class="check"><input type="checkbox" id="showCpa"> Show CPA data</label><button id="addContact" class="btn sm">Add contact</button></div>
+          <div id="contactList" class="lessons"></div>
+          <fieldset>
+            <legend>Save & share</legend>
+            <p class="hint">Copy the scenario as text to share with another trainee or instructor, or paste one here and load it.</p>
+            <textarea id="scJson" aria-label="Scenario text"></textarea>
+            <div class="actions"><button id="scCopy" class="btn sm">Copy current scenario</button><button id="scLoad" class="btn sm">Load pasted scenario</button><button id="scSave" class="btn sm">Save in this browser</button><button id="scRestore" class="btn sm">Restore saved</button></div>
+            <p class="hint" id="scMsg"></p>
+          </fieldset>
+        </section>
+
+        <section class="sidepanel" id="sp-solver" hidden>
+          <p class="hint">Enter any problem's known values — from a textbook, an instructor, or live radar — and get the full solution plotted on the board.</p>
+          <div class="row"><select id="solverType" aria-label="Problem type"></select></div>
+          <form id="solverForm" class="sgrid"></form>
+          <div class="actions"><button id="solverGo" class="btn primary">Solve</button><button id="solverEx" class="btn">Fill example</button><button id="solverCur" class="btn">Use current problem</button></div>
+          <div id="solverOut"></div>
+        </section>
+
+        <section class="sidepanel lessons" id="sp-lessons" hidden></section>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/problems.js"></script>
+<script src="js/radar.js"></script>
+<script src="js/moboard.js"></script>
+<script src="js/bridge.js"></script>
+<script src="js/ui.js"></script>
+
+</body>
+</html>

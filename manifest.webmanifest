@@ -1,0 +1,27 @@
+{
+  "id": "./",
+  "name": "MoBoard Bridge Trainer",
+  "short_name": "MoBoard",
+  "description": "Maneuvering board trainer: a 3D bridge view, live radar, a digital maneuvering board, and graded problems in relative motion, stationing, wind and DIVTACS.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d1920",
+  "theme_color": "#0d1920",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["education", "navigation"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "screenshots": [
+    { "src": "store/phone-1-split.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Bridge view and radar with a CPA problem" },
+    { "src": "store/phone-2-moboard.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Worked solution on the maneuvering board" },
+    { "src": "store/tablet-1-split.png", "sizes": "2560x1600", "type": "image/png", "form_factor": "wide", "label": "Bridge, radar, MoBoard and practice panel" }
+  ]
+}
