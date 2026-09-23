@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.drcameronacarlson.twa",
+        "sha256_cert_fingerprints": ["06:B5:73:F7:55:5A:34:2B:3F:14:D2:0B:AD:F8:B4:64:C0:E6:8D:4A:58:89:07:E2:BD:B4:87:71:9F:4D:4A:BC"]
+      }
+    }]
